@@ -11,8 +11,7 @@ public class ChatApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(ChatApplication.class.getResource(
-            "/scenes/chat.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ChatApplication.class.getResource("/scenes/chat.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("GeekBrains Chat: Version 0.1");
         stage.setScene(scene);

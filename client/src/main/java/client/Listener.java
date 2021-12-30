@@ -49,6 +49,7 @@ public class Listener implements  Runnable{
       if (strFromServer.startsWith("/authok")) {
         System.out.println(strFromServer);
         //login = strFromServer.substring("/authok ".length());
+        controller.changeStageToChat();
         break;
       }
     }
@@ -56,7 +57,8 @@ public class Listener implements  Runnable{
 
   private void readMessage() throws IOException{
     while (true) {
-
+      String strFromServer = in.readUTF();
+      controller.chat.appendText(strFromServer + "\n");
     }
   }
 }

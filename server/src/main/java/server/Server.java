@@ -41,10 +41,7 @@ public class Server {
   }
 
   public synchronized boolean isOnline(String login) {
-    if (clients.containsKey(login)) {
-      return true;
-    }
-    return false;
+    return clients.containsKey(login);
   }
 
   public synchronized void addClient(String login, ClientHandler ch) {
