@@ -1,5 +1,6 @@
 package client;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -9,35 +10,44 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import message.Message;
+import message.Message.MessageType;
 
 public class ChatController implements Initializable {
 
-  private Listener listener;
+  private ClientConnection connection;
 
-  @FXML TextField login;
-  @FXML PasswordField password;
+  @FXML TextField loginField;
+  @FXML PasswordField passwordField;
   @FXML HBox chatPane;
   @FXML TextArea chat;
-  @FXML TextField message;
+  @FXML TextField messageField;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    listener = new Listener(this);
-    new Thread(listener).start();
+    connection = new ClientConnection(this);
+    new Thread(connection).start();
   }
 
-  public void enterChat(ActionEvent event) {
-    listener.send("/auth " + login.getText() + " " + password.getText());
-    login.clear();
-    password.clear();
+  public void enterChat(ActionEvent event) throws IOException {
+    Message message = new Message();
+    message.setMessageType(MessageType.AUTH);
+    message.setLogin(loginField.getText());
+    message.setPassword(passwordField.getText());
+    connection.send(message);
+    loginField.clear();
+    passwordField.clear();
   }
 
   public void changeStageToChat() {
     chatPane.setVisible(true);
   }
 
-  public void sendMessage(ActionEvent actionEvent) {
-    listener.send(message.getText());
-    message.clear();
+  public void sendMessage(ActionEvent actionEvent) throws IOException {
+    Message message = new Message();
+    message.setMessageType(MessageType.USER);
+    message.setText(messageField.getText());
+    connection.send(message);
+    messageField.clear();
   }
 }

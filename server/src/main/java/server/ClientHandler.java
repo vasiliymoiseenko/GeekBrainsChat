@@ -1,20 +1,22 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import message.Message;
+import message.Message.MessageType;
 
 public class ClientHandler {
 
-  private static ExecutorService threadPool = Executors.newCachedThreadPool();
-  private Server server;
-  private Socket socket;
-  private AuthService authService;
-  private DataInputStream in;
-  private DataOutputStream out;
+  private final static ExecutorService threadPool = Executors.newCachedThreadPool();
+  private final Server server;
+  private final Socket socket;
+  private final AuthService authService;
+  private final ObjectInputStream in;
+  private final ObjectOutputStream out;
   private String name;
   private String login;
 
@@ -23,14 +25,13 @@ public class ClientHandler {
       this.server = server;
       this.socket = socket;
       this.authService = server.getAuthService();
-      this.in = new DataInputStream(socket.getInputStream());
-      this.out = new DataOutputStream(socket.getOutputStream());
-
+      this.out = new ObjectOutputStream(socket.getOutputStream());
+      this.in = new ObjectInputStream(socket.getInputStream());
       threadPool.execute(() -> {
         try {
           authentication();
           readMessage();
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
           e.printStackTrace();
         } finally {
           closeConnection();
@@ -42,44 +43,64 @@ public class ClientHandler {
     }
   }
 
-  private void readMessage() throws IOException {
-    while (true) {
-      String strFromClient = in.readUTF();
-      System.out.println("from " + name + ": " + strFromClient);
-      server.sendMessage(name + ": " + strFromClient);
-    }
-  }
-
-  private void authentication() throws IOException {
-    while (true) {
-      String message = in.readUTF();
+  private void authentication() throws IOException, ClassNotFoundException {
+    while (socket.isConnected()) {
+      Message message = (Message) in.readObject();
       System.out.println(message);
-      if (message.startsWith("/auth")) {
-        String[] parts = message.split("\\s");
-        String nameByLoginPass = server.getAuthService().getNameByLoginPass(parts[1], parts[2]);
+      if (message.getMessageType() == MessageType.AUTH) {
+        String nameByLoginPass = authService.getNameByLoginPass(message.getLogin(), message.getPassword());
         if (nameByLoginPass != null) {
-          if (!server.isOnline(parts[1])) {
-            login = parts[1];
+          if (!server.isOnline(message.getLogin())) {
+            login = message.getLogin();
             name = nameByLoginPass;
-            System.out.println("/authok " + login);
-            sendMessage("/authok " + login);
-            server.sendMessage(name + " entered the chat");
-            System.out.println(name + " entered the chat");
+            completeAuth();
+            notifyAboutLogin();
             server.addClient(login, this);
             return;
           } else {
-            sendMessage("Account is already online");
+            //sendMessage("Account is already online");
           }
         } else {
-          sendMessage("Invalid username / password");
+          //sendMessage("Invalid username / password");
         }
       }
     }
   }
 
-  public void sendMessage(String message) {
+  private void completeAuth() {
+    Message message = new Message();
+    message = new Message();
+    message.setMessageType(MessageType.CONNECT);
+    send(message);
+  }
+
+  private void notifyAboutLogin() {
+    Message message = new Message();
+    message.setMessageType(MessageType.SERVER);
+    message.setName(name);
+    message.setText(" entered the chat");
+    server.broadcastMessage(message);
+    System.out.println(name + " entered the chat");
+  }
+
+  private void readMessage() throws IOException, ClassNotFoundException {
+    while (socket.isConnected()) {
+      Message message = (Message) in.readObject();
+      System.out.println(message);
+      switch (message.getMessageType()) {
+        case USER -> broadcastMessage(message);
+      }
+    }
+  }
+
+  private void broadcastMessage(Message message) {
+    message.setName(name);
+    server.broadcastMessage(message);
+  }
+
+  public void send(Message message) {
     try {
-      out.writeUTF(message);
+      out.writeObject(message);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -88,8 +109,8 @@ public class ClientHandler {
   private void closeConnection() {
     if (login != null) {
       server.removeClient(login);
-      server.sendMessage(name + " left the chat");
-      System.out.println(name + " left the chat");
+      notifyAboutExit();
+
     }
     try {
       in.close();
@@ -100,4 +121,12 @@ public class ClientHandler {
     }
   }
 
+  private void notifyAboutExit() {
+    Message message = new Message();
+    message.setMessageType(MessageType.SERVER);
+    message.setName(name);
+    message.setText(" left the chat");
+    server.broadcastMessage(message);
+    System.out.println(name + " left the chat");
+  }
 }

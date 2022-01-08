@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ChatController">
+<StackPane prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ChatController">
    <children>
       <GridPane>
         <columnConstraints>
@@ -32,8 +32,8 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField fx:id="login" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-            <PasswordField fx:id="password" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <TextField fx:id="loginField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <PasswordField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
             <Label text="Login:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                <padding>
                   <Insets right="10.0" />
@@ -86,7 +86,7 @@
                         </TextArea>
                         <HBox spacing="20">
                            <children>
-                              <TextField fx:id="message" onAction="#sendMessage" HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="messageField" onAction="#sendMessage" HBox.hgrow="ALWAYS" />
                               <Button onAction="#sendMessage" text="Отправить" />
                            </children>
                         </HBox>
