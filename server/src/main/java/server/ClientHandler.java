@@ -58,13 +58,21 @@ public class ClientHandler {
             server.addClient(login, this);
             return;
           } else {
-            //sendMessage("Account is already online");
+            sendAuthError("Account is already online");
           }
         } else {
-          //sendMessage("Invalid username / password");
+          sendAuthError("Invalid username/password");
         }
       }
     }
+  }
+
+  private void sendAuthError(String text) {
+    Message message = new Message();
+    message.setMessageType(MessageType.AUTH);
+    message.setText(text);
+    send(message);
+    System.out.println(message);
   }
 
   private void completeAuth() {

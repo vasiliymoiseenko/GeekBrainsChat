@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -22,6 +23,7 @@ public class ChatController implements Initializable {
   @FXML HBox chatPane;
   @FXML TextArea chat;
   @FXML TextField messageField;
+  @FXML Label authError;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -30,11 +32,16 @@ public class ChatController implements Initializable {
   }
 
   public void enterChat(ActionEvent event) throws IOException {
-    Message message = new Message();
-    message.setMessageType(MessageType.AUTH);
-    message.setLogin(loginField.getText());
-    message.setPassword(passwordField.getText());
-    connection.send(message);
+    if (loginField.getText().isEmpty() || passwordField.getText().isEmpty()) {
+      authError.setText("Enter login and password");
+      authError.setVisible(true);
+    } else {
+      Message message = new Message();
+      message.setMessageType(MessageType.AUTH);
+      message.setLogin(loginField.getText());
+      message.setPassword(passwordField.getText());
+      connection.send(message);
+    }
     loginField.clear();
     passwordField.clear();
   }

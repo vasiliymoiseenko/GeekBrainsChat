@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import javafx.application.Platform;
 import message.Message;
 import message.Message.MessageType;
 
@@ -44,7 +45,13 @@ public class ClientConnection implements Runnable {
   private void authorization() throws IOException, ClassNotFoundException {
     while (true) {
       Message message = (Message) in.readObject();
-      if (message.getMessageType() == MessageType.CONNECT) {
+      System.out.println(message);
+      if (message.getMessageType() == MessageType.AUTH) {
+        Platform.runLater(() -> {
+          controller.authError.setText(message.getText());
+          controller.authError.setVisible(true);
+        });
+      } else if (message.getMessageType() == MessageType.CONNECT) {
         System.out.println("connected");
         controller.changeStageToChat();
         break;

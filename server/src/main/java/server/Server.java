@@ -15,11 +15,10 @@ public class Server {
 
   public Server() {
     try (ServerSocket server = new ServerSocket(PORT)) {
-      authService = new AuthService();
       clients = new HashMap<>();
+      authService = new AuthService();
       authService.start();
       while (true) {
-        System.out.println("Server is waiting for clients...");
         Socket socket = server.accept();
         System.out.println("Client is connected");
         new ClientHandler(this, socket);
