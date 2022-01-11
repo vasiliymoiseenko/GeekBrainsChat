@@ -3,12 +3,14 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import message.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Server {
 
+  private static final Logger LOGGER = LogManager.getLogger(Server.class);
   private static final int PORT = 8189;
 
   private AuthService authService;
@@ -16,17 +18,17 @@ public class Server {
 
   public Server() {
     try (ServerSocket server = new ServerSocket(PORT)) {
-      authService = new AuthService();
       clients = new HashMap<>();
+      authService = new AuthService();
       authService.start();
       while (true) {
-        System.out.println("Server is waiting for clients...");
         Socket socket = server.accept();
-        System.out.println("Client is connected");
+        LOGGER.info("Client is connected");
         new ClientHandler(this, socket);
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e);
+      LOGGER.debug(e.toString(), e);
     } finally {
       shutdown();
     }
@@ -41,10 +43,7 @@ public class Server {
   }
 
   public synchronized boolean isOnline(String login) {
-    if (clients.containsKey(login)) {
-      return true;
-    }
-    return false;
+    return clients.containsKey(login);
   }
 
   public synchronized void addClient(String login, ClientHandler ch) {
@@ -59,12 +58,12 @@ public class Server {
     if (authService != null) {
       authService.stop();
     }
-    System.out.println("Server is offline");
+    LOGGER.info("Server is offline");
   }
 
-  public void sendMessage(String message) {
+  public void broadcastMessage(Message message) {
     for (HashMap.Entry<String, ClientHandler> entry : clients.entrySet()) {
-      entry.getValue().sendMessage(message);
+      entry.getValue().send(message);
     }
   }
 }
