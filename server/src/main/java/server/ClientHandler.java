@@ -8,15 +8,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import message.Message;
 import message.Message.MessageType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ClientHandler {
 
-  private final static ExecutorService threadPool = Executors.newCachedThreadPool();
-  private final Server server;
-  private final Socket socket;
-  private final AuthService authService;
-  private final ObjectInputStream in;
-  private final ObjectOutputStream out;
+  private static final Logger LOGGER = LogManager.getLogger(ClientHandler.class);
+  private static ExecutorService threadPool = Executors.newCachedThreadPool();
+  private Server server;
+  private Socket socket;
+  private AuthService authService;
+  private ObjectInputStream in;
+  private ObjectOutputStream out;
   private String name;
   private String login;
 
@@ -32,21 +35,22 @@ public class ClientHandler {
           authentication();
           readMessage();
         } catch (IOException | ClassNotFoundException e) {
-          e.printStackTrace();
+          LOGGER.error(e);
+          LOGGER.debug(e.toString(), e);
         } finally {
           closeConnection();
         }
       });
     } catch (IOException e) {
-      e.printStackTrace();
-      throw new RuntimeException("ClientHandler error");
+      LOGGER.error(e);
+      LOGGER.debug(e.toString(), e);
     }
   }
 
   private void authentication() throws IOException, ClassNotFoundException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
-      System.out.println(message);
+      LOGGER.info("Authorization: " + message.getLogin() + " " + message.getPassword());
       if (message.getMessageType() == MessageType.AUTH) {
         String nameByLoginPass = authService.getNameByLoginPass(message.getLogin(), message.getPassword());
         if (nameByLoginPass != null) {
@@ -72,7 +76,7 @@ public class ClientHandler {
     message.setMessageType(MessageType.AUTH);
     message.setText(text);
     send(message);
-    System.out.println(message);
+    LOGGER.warn(text);
   }
 
   private void completeAuth() {
@@ -88,13 +92,13 @@ public class ClientHandler {
     message.setName(name);
     message.setText(" entered the chat");
     server.broadcastMessage(message);
-    System.out.println(name + " entered the chat");
+    LOGGER.info(name + " entered the chat");
   }
 
   private void readMessage() throws IOException, ClassNotFoundException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
-      System.out.println(message);
+      LOGGER.info(name + ": " + message.getText());
       switch (message.getMessageType()) {
         case USER -> broadcastMessage(message);
       }
@@ -109,8 +113,10 @@ public class ClientHandler {
   public void send(Message message) {
     try {
       out.writeObject(message);
+      LOGGER.debug("SEND: " + message);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e);
+      LOGGER.debug(e.toString(), e);
     }
   }
 
@@ -118,14 +124,14 @@ public class ClientHandler {
     if (login != null) {
       server.removeClient(login);
       notifyAboutExit();
-
     }
     try {
       in.close();
       out.close();
       socket.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e);
+      LOGGER.debug(e.toString(), e);
     }
   }
 
@@ -135,6 +141,6 @@ public class ClientHandler {
     message.setName(name);
     message.setText(" left the chat");
     server.broadcastMessage(message);
-    System.out.println(name + " left the chat");
+    LOGGER.info(name + " left the chat");
   }
 }
