@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import message.Message;
 import message.Message.MessageType;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 public class ClientHandler {
 
   private static final Logger LOGGER = LogManager.getLogger(ClientHandler.class);
-  private static ExecutorService threadPool = Executors.newCachedThreadPool();
+
   private Server server;
   private Socket socket;
   private AuthService authService;
@@ -23,7 +23,7 @@ public class ClientHandler {
   private String name;
   private String login;
 
-  ClientHandler(Server server, Socket socket) {
+  ClientHandler(Server server, Socket socket, ExecutorService threadPool) {
     try {
       this.server = server;
       this.socket = socket;
@@ -50,9 +50,12 @@ public class ClientHandler {
   private void authentication() throws IOException, ClassNotFoundException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
-      LOGGER.info("Authorization: " + message.getLogin() + " " + message.getPassword());
-      if (message.getMessageType() == MessageType.AUTH) {
-        String nameByLoginPass = authService.getNameByLoginPass(message.getLogin(), message.getPassword());
+      if (message.getMessageType() == MessageType.REG) {
+        registration(message);
+      } else if (message.getMessageType() == MessageType.AUTH) {
+        LOGGER.info("Authorization: " + message.getLogin() + " " + message.getPassword());
+        String nameByLoginPass = authService.getNameByLoginPass(message.getLogin(),
+            message.getPassword());
         if (nameByLoginPass != null) {
           if (!server.isOnline(message.getLogin())) {
             login = message.getLogin();
@@ -62,16 +65,37 @@ public class ClientHandler {
             server.addClient(login, this);
             return;
           } else {
-            sendAuthError("Account is already online");
+            sendAuthMessage("Account is already online");
           }
         } else {
-          sendAuthError("Invalid username/password");
+          sendAuthMessage("Invalid username/password");
         }
       }
     }
   }
 
-  private void sendAuthError(String text) {
+  private void registration(Message regMessage) {
+    try {
+      authService.insertUser(regMessage.getLogin(), regMessage.getPassword(), regMessage.getName());
+      Message message = new Message();
+      message.setMessageType(MessageType.REG);
+      message.setLogin(regMessage.getLogin());
+      send(message);
+    } catch (SQLException e) {
+      String ex = e.toString();
+      Message message = new Message();
+      message.setMessageType(MessageType.REG);
+      if (ex.contains("UNIQUE constraint failed")) {
+        String field = ex.substring(ex.lastIndexOf(".") + 1, ex.length() - 1);
+        message.setText("This " + field + " is already in use");
+      } else {
+        message.setText("Registration failed");
+      }
+      send(message);
+    }
+  }
+
+  private void sendAuthMessage(String text) {
     Message message = new Message();
     message.setMessageType(MessageType.AUTH);
     message.setText(text);
@@ -81,7 +105,6 @@ public class ClientHandler {
 
   private void completeAuth() {
     Message message = new Message();
-    message = new Message();
     message.setMessageType(MessageType.CONNECT);
     send(message);
   }
