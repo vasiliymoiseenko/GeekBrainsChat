@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import message.Message;
 import message.Message.MessageType;
 import org.apache.logging.log4j.LogManager;
@@ -54,18 +55,45 @@ public class ClientConnection implements Runnable {
   private void authorization() throws IOException, ClassNotFoundException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
+      if (message.getMessageType() == MessageType.REG) {
+        displayRegMessage(message);
+      }
       if (message.getMessageType() == MessageType.AUTH) {
-        LOGGER.warn(message.getText());
-        Platform.runLater(() -> {
-          controller.authError.setText(message.getText());
-          controller.authError.setVisible(true);
-        });
+        displayAuthMessage(message);
       } else if (message.getMessageType() == MessageType.CONNECT) {
-        LOGGER.info("Authorization completed");
-        Platform.runLater(() -> controller.changeStageToChat());
+        connect();
         break;
       }
     }
+  }
+
+  private void displayRegMessage(Message message) {
+    if (message.getLogin() != null) {
+      Platform.runLater(() -> {
+        controller.regMessage.setTextFill(Color.GREEN);
+        controller.regMessage.setText("User " + message.getLogin() + " registered");
+        controller.regMessage.setVisible(true);
+      });
+    } else {
+      Platform.runLater(() -> {
+        controller.regMessage.setTextFill(Color.RED);
+        controller.regMessage.setText(message.getText());
+        controller.regMessage.setVisible(true);
+      });
+    }
+  }
+
+  private void displayAuthMessage(Message message) {
+    LOGGER.warn(message.getText());
+    Platform.runLater(() -> {
+      controller.authMessage.setText(message.getText());
+      controller.authMessage.setVisible(true);
+    });
+  }
+
+  private void connect() {
+    LOGGER.info("Authorization completed");
+    Platform.runLater(() -> controller.changeStageToChat());
   }
 
   private void readMessage() throws IOException, ClassNotFoundException {

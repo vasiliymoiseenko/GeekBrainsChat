@@ -18,13 +18,11 @@ public class AuthService {
 
   private class Entry {
 
-    private int id;
     private String login;
     private String password;
     private String name;
 
-    public Entry(int id, String login, String password, String name) {
-      this.id = id;
+    public Entry(String login, String password, String name) {
       this.login = login;
       this.password = password;
       this.name = name;
@@ -51,7 +49,6 @@ public class AuthService {
         entries.put(
             rs.getString("login"),
             new Entry(
-                rs.getInt("id"),
                 rs.getString("login"),
                 rs.getString("password"),
                 rs.getString("name")));
@@ -59,13 +56,14 @@ public class AuthService {
     }
   }
 
-  private void insertUser(String login, String password, String name) throws SQLException {
+  public void insertUser(String login, String password, String name) throws SQLException{
     try (PreparedStatement ps = connection.prepareStatement(
         "INSERT INTO users (login, password, name) VALUES (?, ?, ?)")) {
       ps.setString(1, login);
       ps.setString(2, password);
       ps.setString(3, name);
       ps.executeUpdate();
+      entries.put(login, new Entry(login, password, name));
       LOGGER.info("User " + login + " added to users.db");
     }
   }

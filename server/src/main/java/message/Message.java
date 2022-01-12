@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
   public enum MessageType {
-    AUTH, CONNECT, DISCONNECT, USER, SERVER
+    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER
   }
 
   private MessageType messageType;
@@ -56,12 +56,12 @@ public class Message implements Serializable {
 
   @Override
   public String toString() {
-    return "Message{" +
-        "messageType=" + messageType +
-        ", login='" + login + '\'' +
-        ", password='" + password + '\'' +
-        ", name='" + name + '\'' +
-        ", text='" + text + '\'' +
-        '}';
+    StringBuilder sb = new StringBuilder("Message\n");
+    sb.append("\ttype = " + messageType + "\n");
+    sb.append((login != null) ? "\tlogin = " + login + "\n" : "");
+    sb.append((password != null) ? "\tpassword = " + password + "\n" : "");
+    sb.append((name != null) ? "\tname = " + name + "\n" : "");
+    sb.append((text != null) ? "\ttext = " + text + "\n" : "");
+    return sb.toString();
   }
 }
