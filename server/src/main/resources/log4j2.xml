@@ -6,7 +6,7 @@
   </Properties>
 
   <Appenders>
-    <File name="FILE" fileName="${basePath}/server.log" append="true">
+    <File name="FILE" fileName="server/logs/server.log" append="true">
       <PatternLayout pattern="%-5p %d{yyyy-MM-dd HH:mm:ss} [%t] %C (%F:%L) - %m%n" />
     </File>
 
@@ -16,7 +16,7 @@
   </Appenders>
 
   <Loggers>
-    <Root level="info">
+    <Root level="debug">
       <AppenderRef ref="STDOUT" />
       <AppenderRef ref="FILE" />
     </Root>

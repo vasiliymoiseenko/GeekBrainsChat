@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import message.Message;
 import message.Message.MessageType;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public class ClientHandler {
 
   private static final Logger LOGGER = LogManager.getLogger(ClientHandler.class);
-  private static ExecutorService threadPool = Executors.newCachedThreadPool();
+
   private Server server;
   private Socket socket;
   private AuthService authService;
@@ -23,7 +22,7 @@ public class ClientHandler {
   private String name;
   private String login;
 
-  ClientHandler(Server server, Socket socket) {
+  ClientHandler(Server server, Socket socket, ExecutorService threadPool) {
     try {
       this.server = server;
       this.socket = socket;
@@ -81,7 +80,6 @@ public class ClientHandler {
 
   private void completeAuth() {
     Message message = new Message();
-    message = new Message();
     message.setMessageType(MessageType.CONNECT);
     send(message);
   }
