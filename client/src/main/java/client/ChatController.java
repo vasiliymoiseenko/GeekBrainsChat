@@ -6,10 +6,13 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -31,12 +34,20 @@ public class ChatController implements Initializable {
   @FXML TextField regName;
   @FXML Label regMessage;
 
+  @FXML ScrollPane scrollPane;
   @FXML HBox chatPane;
-  @FXML TextArea chat;
+  @FXML GridPane chat;
   @FXML TextField messageField;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    changeStageToAuth();
+    scrollPane.setFitToWidth(true);
+    //Set chat grid
+    /*ColumnConstraints column = new ColumnConstraints();
+    column.setPercentWidth(100);
+    chat.getColumnConstraints().add(column);*/
+
     connection = new ClientConnection(this);
     new Thread(connection).start();
   }
@@ -70,13 +81,13 @@ public class ChatController implements Initializable {
     chatPane.setVisible(true);
   }
 
-  public void changeStageToReg(ActionEvent event) {
+  public void changeStageToReg() {
     authPane.setVisible(false);
     regPane.setVisible(true);
     chatPane.setVisible(false);
   }
 
-  public void changeStageToAuth(ActionEvent event) {
+  public void changeStageToAuth() {
     authPane.setVisible(true);
     regPane.setVisible(false);
     chatPane.setVisible(false);
