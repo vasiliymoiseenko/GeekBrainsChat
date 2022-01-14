@@ -83,6 +83,7 @@ public class ChatController implements Initializable {
     regLogin.clear();
     regPassword.clear();
     regName.clear();
+    regMessage.setVisible(false);
 
     authPane.setVisible(false);
     regPane.setVisible(true);
@@ -92,6 +93,7 @@ public class ChatController implements Initializable {
   public void changeStageToAuth() {
     authLogin.clear();
     authPassword.clear();
+    authMessage.setVisible(false);
 
     authPane.setVisible(true);
     regPane.setVisible(false);
