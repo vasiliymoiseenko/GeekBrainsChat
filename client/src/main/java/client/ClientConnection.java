@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javafx.application.Platform;
+import javafx.geometry.HPos;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import message.Bubble;
 import message.Message;
 import message.Message.MessageType;
 import org.apache.logging.log4j.LogManager;
@@ -16,10 +21,12 @@ public class ClientConnection implements Runnable {
   private static final Logger LOGGER = LogManager.getLogger(ClientConnection.class);
   private static final String SERVER = "localhost";
   private static final int PORT = 8189;
+  private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("HH:mm");
   private Socket socket;
   private ObjectInputStream in;
   private ObjectOutputStream out;
   private ChatController controller;
+  private String name;
 
   public ClientConnection(ChatController controller) {
     try {
@@ -47,6 +54,7 @@ public class ClientConnection implements Runnable {
   }
 
   public void send(Message message) throws IOException {
+    message.setDate(new Date());
     out.writeObject(message);
     out.reset();
     LOGGER.debug("SEND: " + message);
@@ -61,7 +69,7 @@ public class ClientConnection implements Runnable {
       if (message.getMessageType() == MessageType.AUTH) {
         displayAuthMessage(message);
       } else if (message.getMessageType() == MessageType.CONNECT) {
-        connect();
+        connect(message);
         break;
       }
     }
@@ -91,7 +99,8 @@ public class ClientConnection implements Runnable {
     });
   }
 
-  private void connect() {
+  private void connect(Message message) {
+    name = message.getName();
     LOGGER.info("Authorization completed");
     Platform.runLater(() -> controller.changeStageToChat());
   }
@@ -108,13 +117,23 @@ public class ClientConnection implements Runnable {
 
   private void addAsServer(Message message) {
     LOGGER.info(message.getName() + message.getText());
-    String text  = "* " + message.getName() + message.getText() + "\n";
-    controller.chat.appendText(text);
+    String text  = message.getName() + message.getText();
+    Bubble chatMessage = new Bubble(text);
+    GridPane.setHalignment(chatMessage, HPos.CENTER);
+    Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
   }
 
   private void addAsUser(Message message) {
     LOGGER.info(message.getName() + ": " + message.getText());
-    String text = message.getName() + ": " + message.getText() + "\n";
-    controller.chat.appendText(text);
+    Bubble chatMessage;
+    if (message.getName().equals(name)) {
+      chatMessage = new Bubble(message.getText(), FORMATTER.format(message.getDate()));
+      GridPane.setHalignment(chatMessage, HPos.RIGHT);
+    } else {
+      chatMessage = new Bubble(message.getName(), message.getText(), FORMATTER.format(message.getDate()));
+      GridPane.setHalignment(chatMessage, HPos.LEFT);
+    }
+    Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
   }
+
 }

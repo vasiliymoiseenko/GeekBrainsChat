@@ -6,10 +6,13 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -31,21 +34,29 @@ public class ChatController implements Initializable {
   @FXML TextField regName;
   @FXML Label regMessage;
 
+  @FXML ScrollPane scrollPane;
   @FXML HBox chatPane;
-  @FXML TextArea chat;
+  @FXML GridPane chat;
   @FXML TextField messageField;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    changeStageToAuth();
+
+    scrollPane.setFitToWidth(true);
+    scrollPane.vvalueProperty().bind(chat.heightProperty());
+
     connection = new ClientConnection(this);
     new Thread(connection).start();
   }
 
   public void sendMessage(ActionEvent actionEvent) throws IOException {
-    Message message = new Message();
-    message.setMessageType(MessageType.USER);
-    message.setText(messageField.getText());
-    connection.send(message);
+    if (!messageField.getText().trim().isEmpty()) {
+      Message message = new Message();
+      message.setMessageType(MessageType.USER);
+      message.setText(messageField.getText().trim());
+      connection.send(message);
+    }
     messageField.clear();
   }
 
@@ -60,8 +71,6 @@ public class ChatController implements Initializable {
       message.setPassword(authPassword.getText());
       connection.send(message);
     }
-    /*authLogin.clear();
-    authPassword.clear();*/
   }
 
   public void changeStageToChat() {
@@ -70,13 +79,20 @@ public class ChatController implements Initializable {
     chatPane.setVisible(true);
   }
 
-  public void changeStageToReg(ActionEvent event) {
+  public void changeStageToReg() {
+    regLogin.clear();
+    regPassword.clear();
+    regName.clear();
+
     authPane.setVisible(false);
     regPane.setVisible(true);
     chatPane.setVisible(false);
   }
 
-  public void changeStageToAuth(ActionEvent event) {
+  public void changeStageToAuth() {
+    authLogin.clear();
+    authPassword.clear();
+
     authPane.setVisible(true);
     regPane.setVisible(false);
     chatPane.setVisible(false);
@@ -95,10 +111,5 @@ public class ChatController implements Initializable {
       message.setName(regName.getText());
       connection.send(message);
     }
-    /*regLogin.clear();
-    regPassword.clear();
-    regName.clear();*/
   }
-
-
 }
