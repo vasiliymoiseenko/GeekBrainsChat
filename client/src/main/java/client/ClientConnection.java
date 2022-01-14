@@ -54,7 +54,6 @@ public class ClientConnection implements Runnable {
   }
 
   public void send(Message message) throws IOException {
-    message.setDate(new Date());
     out.writeObject(message);
     out.reset();
     LOGGER.debug("SEND: " + message);
@@ -135,5 +134,4 @@ public class ClientConnection implements Runnable {
     }
     Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
   }
-
 }

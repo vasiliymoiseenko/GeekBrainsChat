@@ -16,12 +16,11 @@ public class Message implements Serializable {
   private String name;
   private String text;
 
+  public Message () {
+    this.date = new Date();
+  }
   public Date getDate() {
     return date;
-  }
-
-  public void setDate(Date date) {
-    this.date = date;
   }
 
   public MessageType getMessageType() {
@@ -72,6 +71,7 @@ public class Message implements Serializable {
     sb.append((password != null) ? "\tpassword = " + password + "\n" : "");
     sb.append((name != null) ? "\tname = " + name + "\n" : "");
     sb.append((text != null) ? "\ttext = " + text + "\n" : "");
+    sb.deleteCharAt(sb.length() - 1);
     return sb.toString();
   }
 }

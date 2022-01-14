@@ -105,8 +105,8 @@ public class ClientHandler {
 
   private void completeAuth() {
     Message message = new Message();
-    message.setName(name);
     message.setMessageType(MessageType.CONNECT);
+    message.setName(name);
     send(message);
   }
 
