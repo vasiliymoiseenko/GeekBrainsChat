@@ -51,10 +51,12 @@ public class ChatController implements Initializable {
   }
 
   public void sendMessage(ActionEvent actionEvent) throws IOException {
-    Message message = new Message();
-    message.setMessageType(MessageType.USER);
-    message.setText(messageField.getText());
-    connection.send(message);
+    if (!messageField.getText().trim().isEmpty()) {
+      Message message = new Message();
+      message.setMessageType(MessageType.USER);
+      message.setText(messageField.getText().trim());
+      connection.send(message);
+    }
     messageField.clear();
   }
 
