@@ -1,6 +1,7 @@
 package message;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Message implements Serializable {
 
@@ -8,11 +9,20 @@ public class Message implements Serializable {
     REG, AUTH, CONNECT, DISCONNECT, USER, SERVER
   }
 
+  private Date date;
   private MessageType messageType;
   private String login;
   private String password;
   private String name;
   private String text;
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
   public MessageType getMessageType() {
     return messageType;
@@ -56,7 +66,7 @@ public class Message implements Serializable {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("Message\n");
+    StringBuilder sb = new StringBuilder(date + "\n");
     sb.append("\ttype = " + messageType + "\n");
     sb.append((login != null) ? "\tlogin = " + login + "\n" : "");
     sb.append((password != null) ? "\tpassword = " + password + "\n" : "");

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.scene.layout.GridPane;
@@ -19,6 +21,7 @@ public class ClientConnection implements Runnable {
   private static final Logger LOGGER = LogManager.getLogger(ClientConnection.class);
   private static final String SERVER = "localhost";
   private static final int PORT = 8189;
+  private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("HH:mm");
   private Socket socket;
   private ObjectInputStream in;
   private ObjectOutputStream out;
@@ -51,6 +54,7 @@ public class ClientConnection implements Runnable {
   }
 
   public void send(Message message) throws IOException {
+    message.setDate(new Date());
     out.writeObject(message);
     out.reset();
     LOGGER.debug("SEND: " + message);
@@ -113,9 +117,8 @@ public class ClientConnection implements Runnable {
 
   private void addAsServer(Message message) {
     LOGGER.info(message.getName() + message.getText());
-    String text  = "* " + message.getName() + message.getText();
+    String text  = message.getName() + message.getText();
     Bubble chatMessage = new Bubble(text);
-    chatMessage.setBubbleColor(Color.GREY);
     GridPane.setHalignment(chatMessage, HPos.CENTER);
     Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
   }
@@ -124,10 +127,10 @@ public class ClientConnection implements Runnable {
     LOGGER.info(message.getName() + ": " + message.getText());
     Bubble chatMessage;
     if (message.getName().equals(name)) {
-      chatMessage = new Bubble(message.getText(), "11:20");
+      chatMessage = new Bubble(message.getText(), FORMATTER.format(message.getDate()));
       GridPane.setHalignment(chatMessage, HPos.RIGHT);
     } else {
-      chatMessage = new Bubble(message.getName() + "\n" + message.getText());
+      chatMessage = new Bubble(message.getName(), message.getText(), FORMATTER.format(message.getDate()));
       GridPane.setHalignment(chatMessage, HPos.LEFT);
     }
     Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));

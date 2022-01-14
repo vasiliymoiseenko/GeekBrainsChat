@@ -42,11 +42,9 @@ public class ChatController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     changeStageToAuth();
+
     scrollPane.setFitToWidth(true);
-    //Set chat grid
-    /*ColumnConstraints column = new ColumnConstraints();
-    column.setPercentWidth(100);
-    chat.getColumnConstraints().add(column);*/
+    scrollPane.vvalueProperty().bind(chat.heightProperty());
 
     connection = new ClientConnection(this);
     new Thread(connection).start();
@@ -71,8 +69,6 @@ public class ChatController implements Initializable {
       message.setPassword(authPassword.getText());
       connection.send(message);
     }
-    /*authLogin.clear();
-    authPassword.clear();*/
   }
 
   public void changeStageToChat() {
@@ -82,12 +78,19 @@ public class ChatController implements Initializable {
   }
 
   public void changeStageToReg() {
+    regLogin.clear();
+    regPassword.clear();
+    regName.clear();
+
     authPane.setVisible(false);
     regPane.setVisible(true);
     chatPane.setVisible(false);
   }
 
   public void changeStageToAuth() {
+    authLogin.clear();
+    authPassword.clear();
+
     authPane.setVisible(true);
     regPane.setVisible(false);
     chatPane.setVisible(false);
@@ -106,10 +109,5 @@ public class ChatController implements Initializable {
       message.setName(regName.getText());
       connection.send(message);
     }
-    /*regLogin.clear();
-    regPassword.clear();
-    regName.clear();*/
   }
-
-
 }
