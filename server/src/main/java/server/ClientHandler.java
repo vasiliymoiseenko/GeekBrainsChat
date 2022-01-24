@@ -47,6 +47,14 @@ public class ClientHandler {
     }
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public String getLogin() {
+    return login;
+  }
+
   private void authentication() throws IOException, ClassNotFoundException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
@@ -62,7 +70,7 @@ public class ClientHandler {
             name = nameByLoginPass;
             completeAuth();
             notifyAboutLogin();
-            server.addClient(login, this);
+            server.addClient(this);
             return;
           } else {
             sendAuthMessage("Account is already online");

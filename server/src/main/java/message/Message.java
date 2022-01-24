@@ -1,12 +1,13 @@
 package message;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Message implements Serializable {
 
   public enum MessageType {
-    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER
+    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST
   }
 
   private Date date;
@@ -15,6 +16,7 @@ public class Message implements Serializable {
   private String password;
   private String name;
   private String text;
+  private ArrayList<String> userList;
 
   public Message () {
     this.date = new Date();
@@ -63,6 +65,14 @@ public class Message implements Serializable {
     this.text = text;
   }
 
+  public ArrayList<String> getUserList() {
+    return userList;
+  }
+
+  public void setUserList(ArrayList<String> userList) {
+    this.userList = new ArrayList<>(userList);
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder(date + "\n");
@@ -71,6 +81,7 @@ public class Message implements Serializable {
     sb.append((password != null) ? "\tpassword = " + password + "\n" : "");
     sb.append((name != null) ? "\tname = " + name + "\n" : "");
     sb.append((text != null) ? "\ttext = " + text + "\n" : "");
+    sb.append((userList != null) ? "\tuserList = " + userList + "\n" : "");
     sb.deleteCharAt(sb.length() - 1);
     return sb.toString();
   }
