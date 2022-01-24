@@ -5,11 +5,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import message.UserPicture;
 import message.Bubble;
 import message.Message;
 import message.Message.MessageType;
@@ -110,13 +114,23 @@ public class ClientConnection implements Runnable {
       switch (message.getMessageType()) {
         case USER -> addAsUser(message);
         case SERVER -> addAsServer(message);
+        case LIST -> updateUserList(message);
       }
     }
   }
 
+  private void updateUserList(Message message) {
+    LOGGER.info(message);
+    Platform.runLater(() -> {
+      ObservableList<String> users = FXCollections.observableArrayList(message.getUserList());
+      controller.userList.setItems(users);
+      controller.userList.setCellFactory(new CellRenderer());
+    });
+  }
+
   private void addAsServer(Message message) {
     LOGGER.info(message.getName() + message.getText());
-    String text  = message.getName() + message.getText();
+    String text = message.getName() + message.getText();
     Bubble chatMessage = new Bubble(text);
     GridPane.setHalignment(chatMessage, HPos.CENTER);
     Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
@@ -124,13 +138,18 @@ public class ClientConnection implements Runnable {
 
   private void addAsUser(Message message) {
     LOGGER.info(message.getName() + ": " + message.getText());
-    Bubble chatMessage;
+    HBox chatMessage = new HBox();
+    chatMessage.setSpacing(10);
     if (message.getName().equals(name)) {
-      chatMessage = new Bubble(message.getText(), FORMATTER.format(message.getDate()));
-      GridPane.setHalignment(chatMessage, HPos.RIGHT);
+      chatMessage.setAlignment(Pos.TOP_RIGHT);
+      chatMessage.getChildren()
+          .add(new Bubble(message.getText(), FORMATTER.format(message.getDate())));
+      chatMessage.getChildren().add(new UserPicture());
     } else {
-      chatMessage = new Bubble(message.getName(), message.getText(), FORMATTER.format(message.getDate()));
-      GridPane.setHalignment(chatMessage, HPos.LEFT);
+      chatMessage.setAlignment(Pos.TOP_LEFT);
+      chatMessage.getChildren().add(new UserPicture());
+      chatMessage.getChildren().add(
+          new Bubble(message.getName(), message.getText(), FORMATTER.format(message.getDate())));
     }
     Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
   }

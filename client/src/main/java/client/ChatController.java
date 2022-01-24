@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -34,6 +35,7 @@ public class ChatController implements Initializable {
   @FXML TextField regName;
   @FXML Label regMessage;
 
+  @FXML ListView<String> userList;
   @FXML ScrollPane scrollPane;
   @FXML HBox chatPane;
   @FXML GridPane chat;
@@ -51,7 +53,7 @@ public class ChatController implements Initializable {
   }
 
   public void sendMessage(ActionEvent actionEvent) throws IOException {
-    if (!messageField.getText().trim().isEmpty()) {
+    if (!messageField.getText().strip().isEmpty()) {
       Message message = new Message();
       message.setMessageType(MessageType.USER);
       message.setText(messageField.getText().trim());

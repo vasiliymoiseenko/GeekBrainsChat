@@ -13,7 +13,7 @@ public class Bubble extends Group {
 
   private static final int PADDING = 10;
   private static final int GAP = 4;
-  private static final int RADIUS = 30;
+  private static final int ARC = 30;
   private static final Font TEXT_FONT = Font.font("Ubuntu", 15);
   private static final Font TEXT_FONT_BOLD = Font.font("Ubuntu", FontWeight.BOLD, 15);
   private static final Font META_FONT = Font.font("Ubuntu", 12);
@@ -39,6 +39,7 @@ public class Bubble extends Group {
     textColor = Color.WHITE;
     metaColor = Color.LIGHTGRAY;
     paintBubble("", text, meta);
+
   }
 
   public Bubble(String name, String text, String meta) {
@@ -93,8 +94,8 @@ public class Bubble extends Group {
     Rectangle rectangle = new Rectangle();
     rectangle.setWidth(PADDING * 2 + maxW);
     rectangle.setHeight(PADDING * 2 + nameH + textH + metaH + GAP * countGaps);
-    rectangle.setArcHeight(RADIUS);
-    rectangle.setArcWidth(RADIUS);
+    rectangle.setArcHeight(ARC);
+    rectangle.setArcWidth(ARC);
     rectangle.setFill(bubbleColor);
 
     getChildren().addAll(rectangle, labelName, labelText, labelMeta);

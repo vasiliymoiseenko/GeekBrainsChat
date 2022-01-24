@@ -3,10 +3,12 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import message.Message;
+import message.Message.MessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,13 +18,12 @@ public class Server {
   private static final Logger LOGGER = LogManager.getLogger(Server.class);
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
-  private AuthService authService;
-  private HashMap<String, ClientHandler> clients;
+  private static AuthService authService = new AuthService();
+  private static HashMap<String, ClientHandler> clients = new HashMap<>();
+  private static ArrayList<String> userList = new ArrayList<>();
 
   public Server() {
     try (ServerSocket server = new ServerSocket(PORT)) {
-      clients = new HashMap<>();
-      authService = new AuthService();
       authService.start();
       while (true) {
         Socket socket = server.accept();
@@ -49,12 +50,23 @@ public class Server {
     return clients.containsKey(login);
   }
 
-  public synchronized void addClient(String login, ClientHandler ch) {
-    clients.put(login, ch);
+  public synchronized void addClient(ClientHandler ch) {
+    userList.add(ch.getName());
+    clients.put(ch.getLogin(), ch);
+    broadcastClients();
   }
 
   public synchronized void removeClient(String login) {
+    userList.remove(clients.get(login).getName());
     clients.remove(login);
+    broadcastClients();
+  }
+
+  private void broadcastClients() {
+    Message message = new Message();
+    message.setMessageType(MessageType.LIST);
+    message.setUserList(userList);
+    broadcastMessage(message);
   }
 
   private void shutdown() {
