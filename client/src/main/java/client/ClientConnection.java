@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import message.UserCell;
 import message.UserPicture;
 import message.Bubble;
 import message.Message;
@@ -122,7 +123,7 @@ public class ClientConnection implements Runnable {
   private void updateUserList(Message message) {
     LOGGER.info(message);
     Platform.runLater(() -> {
-      ObservableList<String> users = FXCollections.observableArrayList(message.getUserList());
+      ObservableList<UserCell> users = FXCollections.observableArrayList(message.getUserList());
       controller.userList.setItems(users);
       controller.userList.setCellFactory(new CellRenderer());
     });

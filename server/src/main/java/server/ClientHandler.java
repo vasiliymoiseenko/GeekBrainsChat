@@ -133,6 +133,7 @@ public class ClientHandler {
       LOGGER.info(name + ": " + message.getText());
       switch (message.getMessageType()) {
         case USER -> broadcastMessage(message);
+        case LIST -> server.changeStatus(login, message.getText());
       }
     }
   }
@@ -145,6 +146,7 @@ public class ClientHandler {
   public void send(Message message) {
     try {
       out.writeObject(message);
+      out.reset();
       LOGGER.debug("SEND: " + message);
     } catch (IOException e) {
       LOGGER.error(e);
@@ -154,7 +156,7 @@ public class ClientHandler {
 
   private void closeConnection() {
     if (login != null) {
-      server.removeClient(login);
+      server.removeClient(this);
       notifyAboutExit();
     }
     try {

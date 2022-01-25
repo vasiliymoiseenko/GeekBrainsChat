@@ -13,12 +13,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import message.Message;
 import message.Message.MessageType;
+import message.UserCell;
 
 public class ChatController implements Initializable {
 
@@ -35,7 +37,8 @@ public class ChatController implements Initializable {
   @FXML TextField regName;
   @FXML Label regMessage;
 
-  @FXML ListView<String> userList;
+  @FXML TextField status;
+  @FXML ListView<UserCell> userList;
   @FXML ScrollPane scrollPane;
   @FXML HBox chatPane;
   @FXML GridPane chat;
@@ -115,5 +118,21 @@ public class ChatController implements Initializable {
       message.setName(regName.getText());
       connection.send(message);
     }
+  }
+
+  public void changeStageToSet(MouseEvent mouseEvent) {
+  }
+
+  public void sendStatus() throws IOException{
+    if (!status.getText().strip().isEmpty()) {
+      Message message = new Message();
+      message.setMessageType(MessageType.LIST);
+      message.setText(status.getText());
+      connection.send(message);
+      status.clear();
+    }
+  }
+
+  public void sendDisconnect(MouseEvent mouseEvent) {
   }
 }
