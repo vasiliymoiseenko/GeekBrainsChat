@@ -134,6 +134,8 @@ public class ClientHandler {
       switch (message.getMessageType()) {
         case USER -> broadcastMessage(message);
         case LIST -> server.changeStatus(login, message.getText());
+        case DISCONNECT -> closeConnection();
+
       }
     }
   }

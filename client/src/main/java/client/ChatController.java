@@ -51,8 +51,8 @@ public class ChatController implements Initializable {
     scrollPane.setFitToWidth(true);
     scrollPane.vvalueProperty().bind(chat.heightProperty());
 
-    connection = new ClientConnection(this);
-    new Thread(connection).start();
+    /*connection = new ClientConnection(this);
+    new Thread(connection).start();*/
   }
 
   public void sendMessage(ActionEvent actionEvent) throws IOException {
@@ -66,6 +66,10 @@ public class ChatController implements Initializable {
   }
 
   public void enterChat(ActionEvent event) throws IOException {
+    if (connection == null) {
+      connection = new ClientConnection(this);
+      new Thread(connection).start();
+    }
     if (authLogin.getText().isEmpty() || authPassword.getText().isEmpty()) {
       authMessage.setText("Enter login and password");
       authMessage.setVisible(true);
@@ -133,6 +137,11 @@ public class ChatController implements Initializable {
     }
   }
 
-  public void sendDisconnect(MouseEvent mouseEvent) {
+  public void sendDisconnect(MouseEvent mouseEvent) throws IOException{
+    Message message = new Message();
+    message.setMessageType(MessageType.DISCONNECT);
+    connection.send(message);
+    connection = null;
+    changeStageToAuth();
   }
 }

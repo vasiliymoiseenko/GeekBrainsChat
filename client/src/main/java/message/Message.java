@@ -23,6 +23,7 @@ public class Message implements Serializable {
   public Message () {
     this.date = new Date();
   }
+
   public Date getDate() {
     return date;
   }
