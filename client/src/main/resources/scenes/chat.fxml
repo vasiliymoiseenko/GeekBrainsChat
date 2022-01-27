@@ -9,7 +9,7 @@
 
 <StackPane prefHeight="400.0" prefWidth="800.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ChatController">
    <children>
-      <GridPane fx:id="authPane" prefHeight="596.0" prefWidth="1039.0" visible="false">
+      <GridPane fx:id="authPane" prefHeight="596.0" prefWidth="1039.0" stylesheets="@../styles/chat.css">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="210.0" />
@@ -23,8 +23,8 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
           <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="NEVER" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-          <RowConstraints minHeight="10.0" prefHeight="50.0" />
+            <RowConstraints minHeight="10.0" prefHeight="20.0" />
+          <RowConstraints minHeight="10.0" prefHeight="55.0" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
@@ -47,14 +47,17 @@
                   <Font name="Ubuntu" size="15.0" />
                </font>
             </Label>
-            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#enterChat" prefHeight="30.0" prefWidth="75.0" text="Enter" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="TOP">
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#enterChat" prefHeight="40.0" prefWidth="120.0" text="Enter" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
+               <font>
+                  <Font name="Ubuntu" size="15.0" />
+               </font>
             </Button>
             <Label text="GeekBrains Chat" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                <font>
-                  <Font name="Ubuntu" size="25.0" />
+                  <Font name="Ubuntu Bold" size="25.0" />
                </font>
             </Label>
             <Label fx:id="authMessage" text="Account is already online" textAlignment="CENTER" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
@@ -73,29 +76,29 @@
             </Label>
          </children>
       </GridPane>
-      <HBox fx:id="chatPane">
+      <HBox fx:id="chatPane" visible="false">
          <children>
             <VBox prefWidth="300.0">
                <children>
-                  <HBox alignment="CENTER">
+                  <HBox alignment="CENTER" stylesheets="@../styles/chat.css">
                      <children>
-                        <ImageView fitHeight="36.0" fitWidth="29.0" onMouseClicked="#sendDisconnect" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/logout.jpeg" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="status" focusTraversable="false" onAction="#sendStatus" prefHeight="30.0" promptText="Status" HBox.hgrow="ALWAYS">
-                           <HBox.margin>
-                              <Insets left="10.0" right="10.0" />
-                           </HBox.margin>
-                        </TextField>
-                        <ImageView fitHeight="29.0" fitWidth="31.0" onMouseClicked="#changeStageToSet" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="32.0" fitWidth="33.0" onMouseClicked="#changeStageToSet" pickOnBounds="true" preserveRatio="true" styleClass="buttonIcon">
                            <image>
                               <Image url="@../images/settings.png" />
                            </image>
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
+                        </ImageView>
+                        <TextField fx:id="status" focusTraversable="false" onAction="#sendStatus" prefHeight="30.0" promptText="Status" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <ImageView fitHeight="36.0" fitWidth="29.0" onMouseClicked="#sendDisconnect" pickOnBounds="true" preserveRatio="true" styleClass="buttonIcon">
+                           <image>
+                              <Image url="@../images/logout.png" />
+                           </image>
                         </ImageView>
                      </children>
                      <VBox.margin>
@@ -137,10 +140,14 @@
                               </GridPane>
                            </content>
                         </ScrollPane>
-                        <HBox>
+                        <HBox stylesheets="@../styles/chat.css">
                            <children>
-                              <TextField fx:id="messageField" onAction="#sendMessage" HBox.hgrow="ALWAYS" />
-                              <Button ellipsisString="" onAction="#sendMessage" text="Отправить" />
+                              <TextField fx:id="messageField" onAction="#sendMessage" prefHeight="30.0" promptText="Message" styleClass="textField" HBox.hgrow="ALWAYS" />
+                              <Button mnemonicParsing="false" onAction="#sendMessage" prefHeight="30.0" prefWidth="70.0" text="Send">
+                                 <font>
+                                    <Font name="Ubuntu" size="13.0" />
+                                 </font>
+                              </Button>
                            </children>
                         </HBox>
                      </children>
@@ -149,7 +156,7 @@
             </VBox>
          </children>
       </HBox>
-      <GridPane fx:id="regPane" prefHeight="596.0" prefWidth="1039.0" visible="false">
+      <GridPane fx:id="regPane" prefHeight="596.0" prefWidth="1039.0" stylesheets="@../styles/chat.css" visible="false">
          <children>
             <TextField fx:id="regLogin" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
             <PasswordField fx:id="regPassword" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
@@ -170,14 +177,17 @@
                   <Insets right="10.0" />
                </padding>
             </Label>
-            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#register" prefHeight="30.0" prefWidth="75.0" text="Register" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="10" GridPane.valignment="TOP">
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#register" prefHeight="40.0" prefWidth="120.0" text="Register" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="10" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
+               <font>
+                  <Font size="15.0" />
+               </font>
             </Button>
             <Label text="GeekBrains Chat" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                <font>
-                  <Font name="Ubuntu" size="25.0" />
+                  <Font name="Ubuntu Bold" size="25.0" />
                </font>
             </Label>
             <Label fx:id="regMessage" text="Login is already in use" textAlignment="CENTER" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
@@ -219,8 +229,8 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="10.0" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-            <RowConstraints minHeight="10.0" prefHeight="50.0" />
+            <RowConstraints minHeight="10.0" prefHeight="20.0" />
+            <RowConstraints minHeight="10.0" prefHeight="55.0" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
          </rowConstraints>

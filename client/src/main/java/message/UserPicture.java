@@ -1,7 +1,10 @@
 package message;
 
+import java.net.URL;
 import javafx.scene.Group;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
 public class UserPicture extends Group {
@@ -11,7 +14,8 @@ public class UserPicture extends Group {
   public UserPicture() {
     Circle circle = new Circle();
     circle.setRadius(RADIUS);
-    circle.setFill(Color.BLACK);
+
+    circle.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/default.png"))));
     getChildren().addAll(circle);
   }
 }

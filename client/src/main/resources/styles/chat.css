@@ -22,6 +22,32 @@
  }
 
 .list-cell:filled:hover {
-    -fx-background-color:  #F5F5F5;
+    -fx-background-color: #E0E0E0;
     -fx-text-color: white;
+}
+
+.buttonIcon {
+    -fx-opacity: 0.3;
+}
+
+.buttonIcon:hover {
+    -fx-opacity: 0.6;
+}
+
+.button {
+    -fx-background-color: #4169E1;
+    -fx-background-radius: 0;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-opacity: 0.85;
+}
+
+.textField {
+    -fx-border-style: none none none solid;
+    -fx-border-width: 1;
+    -fx-border-color: #E0E0E0;
+    -fx-background-color:
+    -fx-control-inner-background;
 }

@@ -50,9 +50,6 @@ public class ChatController implements Initializable {
 
     scrollPane.setFitToWidth(true);
     scrollPane.vvalueProperty().bind(chat.heightProperty());
-
-    /*connection = new ClientConnection(this);
-    new Thread(connection).start();*/
   }
 
   public void sendMessage(ActionEvent actionEvent) throws IOException {
