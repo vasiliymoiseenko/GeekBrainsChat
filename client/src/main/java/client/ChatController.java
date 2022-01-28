@@ -38,6 +38,12 @@ public class ChatController implements Initializable {
   @FXML TextField regName;
   @FXML Label regMessage;
 
+  @FXML GridPane setPane;
+  @FXML PasswordField setPassword;
+  @FXML PasswordField setPasswordRep;
+  @FXML TextField setName;
+  @FXML Label setMessage;
+
   @FXML TextField status;
   @FXML ListView<UserCell> userList;
   @FXML ScrollPane scrollPane;
@@ -84,6 +90,7 @@ public class ChatController implements Initializable {
     authPane.setVisible(false);
     regPane.setVisible(false);
     chatPane.setVisible(true);
+    setPane.setVisible(false);
   }
 
   public void changeStageToReg() {
@@ -96,6 +103,7 @@ public class ChatController implements Initializable {
     authPane.setVisible(false);
     regPane.setVisible(true);
     chatPane.setVisible(false);
+    setPane.setVisible(false);
   }
 
   public void changeStageToAuth() {
@@ -106,6 +114,19 @@ public class ChatController implements Initializable {
     authPane.setVisible(true);
     regPane.setVisible(false);
     chatPane.setVisible(false);
+    setPane.setVisible(false);
+  }
+
+  public void changeStageToSet(MouseEvent mouseEvent) {
+    setName.clear();
+    setPassword.clear();
+    setPasswordRep.clear();
+    setMessage.setVisible(false);
+
+    authPane.setVisible(false);
+    regPane.setVisible(false);
+    chatPane.setVisible(false);
+    setPane.setVisible(true);
   }
 
   public void register() throws IOException {
@@ -132,9 +153,6 @@ public class ChatController implements Initializable {
     }
   }
 
-  public void changeStageToSet(MouseEvent mouseEvent) {
-  }
-
   public void sendStatus() throws IOException{
     if (!status.getText().strip().isEmpty()) {
       Message message = new Message();
@@ -151,5 +169,8 @@ public class ChatController implements Initializable {
     connection.send(message);
     connection = null;
     changeStageToAuth();
+  }
+
+  public void saveAccChanges(ActionEvent event) {
   }
 }

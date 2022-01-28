@@ -75,7 +75,7 @@
             </Label>
          </children>
       </GridPane>
-      <HBox fx:id="chatPane" visible="false">
+      <HBox fx:id="chatPane">
          <children>
             <VBox prefWidth="300.0">
                <children>
@@ -155,7 +155,7 @@
             </VBox>
          </children>
       </HBox>
-      <GridPane fx:id="regPane" prefHeight="596.0" prefWidth="1039.0" stylesheets="@../styles/chat.css">
+      <GridPane fx:id="regPane" prefHeight="596.0" prefWidth="1039.0" stylesheets="@../styles/chat.css" visible="false">
          <children>
             <TextField fx:id="regLogin" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
             <PasswordField fx:id="regPassword" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
@@ -239,6 +239,78 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="10.0" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="75.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+      </GridPane>
+      <GridPane fx:id="setPane" prefHeight="596.0" prefWidth="1039.0" stylesheets="@../styles/chat.css" visible="false">
+         <children>
+            <TextField fx:id="setName" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <PasswordField fx:id="setPassword" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+            <PasswordField fx:id="setPasswordRep" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER" />
+            <Label text="Change nickname:" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+               <font>
+                  <Font name="Ubuntu" size="15.0" />
+               </font>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+            </Label>
+            <Label text="Change password:" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+               <font>
+                  <Font name="Ubuntu" size="15.0" />
+               </font>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+            </Label>
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveAccChanges" prefHeight="40.0" prefWidth="120.0" text="Save" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Button>
+            <Label fx:id="setMessage" text="Login is already in use" textAlignment="CENTER" textFill="RED" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <font>
+                  <Font name="Ubuntu" size="15.0" />
+               </font>
+            </Label>
+            <Hyperlink alignment="CENTER" onAction="#changeStageToChat" prefHeight="23.0" prefWidth="219.0" style="-fx-underline: false;" text="Return to chat" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="TOP">
+               <font>
+                  <Font name="Ubuntu" size="13.0" />
+               </font>
+            </Hyperlink>
+            <Label text="Repeat password:" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
+               <font>
+                  <Font name="Ubuntu" size="15.0" />
+               </font>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+            </Label>
+            <ImageView fitHeight="112.0" fitWidth="96.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+               <image>
+                  <Image url="@../images/default.png" />
+               </image>
+            </ImageView>
+         </children>
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="210.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="10.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="75.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
