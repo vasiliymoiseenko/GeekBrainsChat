@@ -5,10 +5,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import message.Message;
 import message.Message.MessageType;
+import message.UserCell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +22,7 @@ public class Server {
 
   private static AuthService authService = new AuthService();
   private static HashMap<String, ClientHandler> clients = new HashMap<>();
-  private static ArrayList<String> userList = new ArrayList<>();
+  private static HashMap<String, UserCell> userList = new HashMap<>();
 
   public Server() {
     try (ServerSocket server = new ServerSocket(PORT)) {
@@ -47,18 +49,24 @@ public class Server {
   }
 
   public synchronized boolean isOnline(String login) {
-    return clients.containsKey(login);
+    return userList.containsKey(login);
   }
 
   public synchronized void addClient(ClientHandler ch) {
-    userList.add(ch.getName());
+    userList.put(ch.getLogin(), new UserCell(ch.getName(), "..."));
     clients.put(ch.getLogin(), ch);
     broadcastClients();
   }
 
-  public synchronized void removeClient(String login) {
-    userList.remove(clients.get(login).getName());
-    clients.remove(login);
+  public synchronized void removeClient(ClientHandler ch) {
+    userList.remove(ch.getLogin());
+    clients.remove(ch.getLogin());
+    broadcastClients();
+  }
+
+  public synchronized void updateClient(ClientHandler ch) {
+    UserCell user = userList.get(ch.getLogin());
+    user.setName(ch.getName());
     broadcastClients();
   }
 
@@ -78,8 +86,17 @@ public class Server {
   }
 
   public void broadcastMessage(Message message) {
-    for (HashMap.Entry<String, ClientHandler> entry : clients.entrySet()) {
+    for (Map.Entry<String, ClientHandler> entry: clients.entrySet()) {
       entry.getValue().send(message);
     }
+  }
+
+  public void directMessage(String login, Message message) {
+    clients.get(login).send(message);
+  }
+
+  public void changeStatus(String login, String text) {
+    userList.get(login).setStatus(text);
+    broadcastClients();
   }
 }

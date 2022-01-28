@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import message.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +28,14 @@ public class AuthService {
       this.password = password;
       this.name = name;
     }
+
+    public void setPassword(String password) {
+      this.password = password;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
   }
 
   private HashMap<String, Entry> entries = new HashMap<>();
@@ -41,47 +50,6 @@ public class AuthService {
       LOGGER.error(e);
       LOGGER.debug(e.toString(), e);
     }
-  }
-
-  private void readUsers() throws SQLException{
-    try (ResultSet rs = statement.executeQuery("SELECT * FROM users")) {
-      while (rs.next()) {
-        entries.put(
-            rs.getString("login"),
-            new Entry(
-                rs.getString("login"),
-                rs.getString("password"),
-                rs.getString("name")));
-      }
-    }
-  }
-
-  public void insertUser(String login, String password, String name) throws SQLException{
-    try (PreparedStatement ps = connection.prepareStatement(
-        "INSERT INTO users (login, password, name) VALUES (?, ?, ?)")) {
-      ps.setString(1, login);
-      ps.setString(2, password);
-      ps.setString(3, name);
-      ps.executeUpdate();
-      entries.put(login, new Entry(login, password, name));
-      LOGGER.info("User " + login + " added to users.db");
-    }
-  }
-
-  private void createTable() throws SQLException {
-    statement.executeUpdate("""
-        CREATE TABLE IF NOT EXISTS users (
-         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\s
-         login TEXT NOT NULL UNIQUE,\s
-         password TEXT NOT NULL,\s
-         name TEXT NOT NULL UNIQUE\s
-        );""");
-
-  }
-
-  private void connect() throws SQLException {
-    connection = DriverManager.getConnection("jdbc:sqlite:server/db/users.db");
-    statement = connection.createStatement();
   }
 
   public void stop() {
@@ -105,4 +73,80 @@ public class AuthService {
     }
     return null;
   }
+
+  public void insertUser(String login, String password, String name) throws SQLException{
+    try (PreparedStatement ps = connection.prepareStatement(
+        "INSERT INTO users (login, password, name) VALUES (?, ?, ?)")) {
+      ps.setString(1, login);
+      ps.setString(2, password);
+      ps.setString(3, name);
+      ps.executeUpdate();
+      entries.put(login, new Entry(login, password, name));
+      LOGGER.info("User " + login + " added to users.db");
+    }
+  }
+
+  public void updateNameAndPassword(String login, Message message) throws SQLException{
+    try (PreparedStatement ps = connection.prepareStatement("UPDATE users SET name = ?, password = ? WHERE login = ?;")) {
+      ps.setString(1, message.getName());
+      ps.setString(2, message.getPassword());
+      ps.setString(3, login);
+      ps.executeUpdate();
+
+      Entry entry = entries.get(login);
+      entry.setName(message.getName());
+      entry.setPassword(message.getPassword());
+    }
+  }
+
+  public void updateName(String login, Message message) throws  SQLException{
+    try (PreparedStatement ps = connection.prepareStatement("UPDATE users SET name = ? WHERE login = ?;")) {
+      ps.setString(1, message.getName());
+      ps.setString(2, login);
+      ps.executeUpdate();
+
+      entries.get(login).setName(message.getName());
+    }
+  }
+
+  public void updatePassword(String login, Message message) throws SQLException{
+    try (PreparedStatement ps = connection.prepareStatement("UPDATE users SET password = ? WHERE login = ?;")) {
+      ps.setString(1, message.getPassword());
+      ps.setString(2, login);
+      ps.executeUpdate();
+
+      entries.get(login).setName(message.getPassword());
+    }
+  }
+
+  private void readUsers() throws SQLException{
+    try (ResultSet rs = statement.executeQuery("SELECT * FROM users")) {
+      while (rs.next()) {
+        entries.put(
+            rs.getString("login"),
+            new Entry(
+                rs.getString("login"),
+                rs.getString("password"),
+                rs.getString("name")));
+      }
+    }
+  }
+
+  private void createTable() throws SQLException {
+    statement.executeUpdate("""
+        CREATE TABLE IF NOT EXISTS users (
+         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\s
+         login TEXT NOT NULL UNIQUE,\s
+         password TEXT NOT NULL,\s
+         name TEXT NOT NULL UNIQUE\s
+        );""");
+
+  }
+
+  private void connect() throws SQLException {
+    connection = DriverManager.getConnection("jdbc:sqlite:server/db/users.db");
+    statement = connection.createStatement();
+  }
+
+
 }

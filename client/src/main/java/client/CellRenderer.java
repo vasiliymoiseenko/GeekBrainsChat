@@ -1,30 +1,44 @@
 package client;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import message.UserCell;
 import message.UserPicture;
 
-public class CellRenderer implements Callback<ListView<String>, ListCell<String>> {
+public class CellRenderer implements Callback<ListView<UserCell>, ListCell<UserCell>> {
 
   @Override
-  public ListCell<String> call(ListView<String> stringListView) {
-    ListCell<String> cell = new ListCell<String>() {
+  public ListCell<UserCell> call(ListView<UserCell> stringListView) {
+    ListCell<UserCell> cell = new ListCell<>() {
 
       @Override
-      protected void updateItem(String name, boolean empty) {
-        super.updateItem(name, empty);
+      protected void updateItem(UserCell user, boolean empty) {
+        super.updateItem(user, empty);
         setGraphic(null);
         setText(null);
-        if (name != null) {
+        if (user != null) {
           HBox hBox = new HBox();
           hBox.setSpacing(10);
-          Text nameText = new Text(name);
+          hBox.setPadding(new Insets(5));
+
+          VBox vBox = new VBox();
+          vBox.setSpacing(5);
+          vBox.setAlignment(Pos.CENTER_LEFT);
+          Text nameText = new Text(user.getName());
+          nameText.setFont(Font.font("Ubuntu", FontWeight.BOLD, 15));
+          Text statusText = new Text(user.getStatus());
+          vBox.getChildren().addAll(nameText, statusText);
+
           UserPicture userPicture = new UserPicture();
-          hBox.getChildren().addAll(userPicture, nameText);
+          hBox.getChildren().addAll(userPicture, vBox);
           hBox.setAlignment(Pos.CENTER_LEFT);
           setGraphic(hBox);
         }

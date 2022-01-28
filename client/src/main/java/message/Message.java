@@ -3,11 +3,13 @@ package message;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public class Message implements Serializable {
 
   public enum MessageType {
-    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST
+    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST, SET
   }
 
   private Date date;
@@ -16,11 +18,12 @@ public class Message implements Serializable {
   private String password;
   private String name;
   private String text;
-  private ArrayList<String> userList;
+  private List<UserCell> userList;
 
   public Message () {
     this.date = new Date();
   }
+
   public Date getDate() {
     return date;
   }
@@ -65,12 +68,12 @@ public class Message implements Serializable {
     this.text = text;
   }
 
-  public ArrayList<String> getUserList() {
+  public List<UserCell> getUserList() {
     return userList;
   }
 
-  public void setUserList(ArrayList<String> userList) {
-    this.userList = new ArrayList<>(userList);
+  public void setUserList(HashMap<String, UserCell> userList) {
+    this.userList = new ArrayList<>(userList.values());
   }
 
   @Override

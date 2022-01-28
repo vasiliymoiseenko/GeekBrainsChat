@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import message.UserCell;
 import message.UserPicture;
 import message.Bubble;
 import message.Message;
@@ -81,7 +82,7 @@ public class ClientConnection implements Runnable {
   private void displayRegMessage(Message message) {
     if (message.getLogin() != null) {
       Platform.runLater(() -> {
-        controller.regMessage.setTextFill(Color.GREEN);
+        controller.regMessage.setTextFill(Color.ROYALBLUE);
         controller.regMessage.setText("User " + message.getLogin() + " registered");
         controller.regMessage.setVisible(true);
       });
@@ -115,14 +116,34 @@ public class ClientConnection implements Runnable {
         case USER -> addAsUser(message);
         case SERVER -> addAsServer(message);
         case LIST -> updateUserList(message);
+        case SET -> updateSettings(message);
       }
     }
   }
 
+  private void updateSettings(Message message) {
+    if (message.getName() != null) {
+      name = message.getName();
+    }
+    if (message.getText() == null) {
+      Platform.runLater(() -> {
+        controller.setMessage.setTextFill(Color.ROYALBLUE);
+        controller.setMessage.setText("Changes saved");
+        controller.setMessage.setVisible(true);
+      });
+    } else {
+      Platform.runLater(() -> {
+        controller.setMessage.setTextFill(Color.RED);
+        controller.setMessage.setText(message.getText());
+        controller.setMessage.setVisible(true);
+      });
+    }
+  }
+
   private void updateUserList(Message message) {
-    LOGGER.info(message);
+    LOGGER.debug(message);
     Platform.runLater(() -> {
-      ObservableList<String> users = FXCollections.observableArrayList(message.getUserList());
+      ObservableList<UserCell> users = FXCollections.observableArrayList(message.getUserList());
       controller.userList.setItems(users);
       controller.userList.setCellFactory(new CellRenderer());
     });
