@@ -9,7 +9,7 @@ import java.util.List;
 public class Message implements Serializable {
 
   public enum MessageType {
-    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST
+    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST, SET
   }
 
   private Date date;

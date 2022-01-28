@@ -26,30 +26,51 @@ public class ChatController implements Initializable {
 
   private ClientConnection connection;
 
-  @FXML GridPane authPane;
-  @FXML TextField authLogin;
-  @FXML PasswordField authPassword;
-  @FXML Label authMessage;
+  @FXML
+  GridPane authPane;
+  @FXML
+  TextField authLogin;
+  @FXML
+  PasswordField authPassword;
+  @FXML
+  Label authMessage;
 
-  @FXML GridPane regPane;
-  @FXML TextField regLogin;
-  @FXML PasswordField regPassword;
-  @FXML PasswordField regPasswordRep;
-  @FXML TextField regName;
-  @FXML Label regMessage;
+  @FXML
+  GridPane regPane;
+  @FXML
+  TextField regLogin;
+  @FXML
+  PasswordField regPassword;
+  @FXML
+  PasswordField regPasswordRep;
+  @FXML
+  TextField regName;
+  @FXML
+  Label regMessage;
 
-  @FXML GridPane setPane;
-  @FXML PasswordField setPassword;
-  @FXML PasswordField setPasswordRep;
-  @FXML TextField setName;
-  @FXML Label setMessage;
+  @FXML
+  GridPane setPane;
+  @FXML
+  PasswordField setPassword;
+  @FXML
+  PasswordField setPasswordRep;
+  @FXML
+  TextField setName;
+  @FXML
+  Label setMessage;
 
-  @FXML TextField status;
-  @FXML ListView<UserCell> userList;
-  @FXML ScrollPane scrollPane;
-  @FXML HBox chatPane;
-  @FXML GridPane chat;
-  @FXML TextField messageField;
+  @FXML
+  TextField status;
+  @FXML
+  ListView<UserCell> userList;
+  @FXML
+  ScrollPane scrollPane;
+  @FXML
+  HBox chatPane;
+  @FXML
+  GridPane chat;
+  @FXML
+  TextField messageField;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -153,7 +174,7 @@ public class ChatController implements Initializable {
     }
   }
 
-  public void sendStatus() throws IOException{
+  public void sendStatus() throws IOException {
     if (!status.getText().strip().isEmpty()) {
       Message message = new Message();
       message.setMessageType(MessageType.LIST);
@@ -163,7 +184,7 @@ public class ChatController implements Initializable {
     }
   }
 
-  public void sendDisconnect(MouseEvent mouseEvent) throws IOException{
+  public void sendDisconnect(MouseEvent mouseEvent) throws IOException {
     Message message = new Message();
     message.setMessageType(MessageType.DISCONNECT);
     connection.send(message);
@@ -171,6 +192,53 @@ public class ChatController implements Initializable {
     changeStageToAuth();
   }
 
-  public void saveAccChanges(ActionEvent event) {
+  public void saveAccChanges(ActionEvent event) throws IOException{
+    if (!setName.getText().isEmpty()) {
+      if (setPassword.getText().isEmpty() && setPasswordRep.getText().isEmpty()) {
+        sendNewName(setName.getText());
+      } else {
+        if ((setPassword.getText().equals(setPasswordRep.getText()))) {
+          sendNewNameAndPassword(setName.getText(), setPassword.getText());
+        } else {
+          setMessage.setTextFill(Color.RED);
+          setMessage.setText("Passwords do not match");
+          setMessage.setVisible(true);
+        }
+      }
+    } else {
+      if (setPassword.getText().isEmpty() && setPasswordRep.getText().isEmpty()) {
+        setMessage.setTextFill(Color.RED);
+        setMessage.setText("Nothing to save");
+        setMessage.setVisible(true);
+      } else if (setPassword.getText().equals(setPasswordRep.getText())) {
+        sendNewPassword(setPassword.getText());
+      } else {
+        setMessage.setTextFill(Color.RED);
+        setMessage.setText("Passwords do not match");
+        setMessage.setVisible(true);
+      }
+    }
+  }
+
+  private void sendNewNameAndPassword(String name, String password) throws IOException{
+    Message message = new Message();
+    message.setMessageType(MessageType.SET);
+    message.setName(name);
+    message.setPassword(password);
+    connection.send(message);
+  }
+
+  private void sendNewPassword(String password)  throws IOException{
+    Message message = new Message();
+    message.setMessageType(MessageType.SET);
+    message.setPassword(password);
+    connection.send(message);
+  }
+
+  private void sendNewName(String name)  throws IOException{
+    Message message = new Message();
+    message.setMessageType(MessageType.SET);
+    message.setName(name);
+    connection.send(message);
   }
 }

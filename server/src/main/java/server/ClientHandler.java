@@ -130,17 +130,57 @@ public class ClientHandler {
   private void readMessage() throws IOException, ClassNotFoundException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
-      LOGGER.info(name + ": " + message.getText());
       switch (message.getMessageType()) {
         case USER -> broadcastMessage(message);
         case LIST -> server.changeStatus(login, message.getText());
         case DISCONNECT -> closeConnection();
-
+        case SET -> updtateSettings(message);
       }
     }
   }
 
+  private void updtateSettings(Message setMessage) {
+    try {
+      if (setMessage.getName() != null) {
+        if (setMessage.getPassword() != null) {
+          authService.updateNameAndPassword(login, setMessage);
+          LOGGER.info(login + " changed name to " + setMessage.getName() + " and password to "
+              + setMessage.getPassword());
+          sendNewName(setMessage.getName());
+        } else {
+          authService.updateName(login, setMessage);
+          LOGGER.info(login + " changed name to " + setMessage.getName());
+          sendNewName(setMessage.getName());
+        }
+      } else {
+        authService.updatePassword(login, setMessage);
+        LOGGER.info(login + " changed password to " + setMessage.getPassword());
+        sendSetMessage(login);
+      }
+      server.updateClient(this);
+    } catch (SQLException e) {
+      String ex = e.toString();
+      Message message = new Message();
+      message.setMessageType(MessageType.SET);
+      if (ex.contains("UNIQUE constraint failed")) {
+        String field = ex.substring(ex.lastIndexOf(".") + 1, ex.length() - 1);
+        message.setText("This " + field + " is already in use");
+      } else {
+        message.setText("Saving changes failed");
+      }
+      send(message);
+    }
+  }
+
+  private void sendSetMessage(String login) {
+    Message message = new Message();
+    message.setMessageType(MessageType.SET);
+    send(message);
+  }
+
+
   private void broadcastMessage(Message message) {
+    LOGGER.info(name + ": " + message.getText());
     message.setName(name);
     server.broadcastMessage(message);
   }
@@ -157,6 +197,7 @@ public class ClientHandler {
   }
 
   private void closeConnection() {
+    LOGGER.info(login + "closed connection");
     if (login != null) {
       server.removeClient(this);
       notifyAboutExit();
@@ -178,5 +219,22 @@ public class ClientHandler {
     message.setText(" left the chat");
     server.broadcastMessage(message);
     LOGGER.info(name + " left the chat");
+  }
+
+  private void sendNewName(String newName) {
+    String oldName = name;
+    name = newName;
+
+    Message message = new Message();
+    message.setMessageType(MessageType.SET);
+    message.setName(newName);
+    send(message);
+
+    message = new Message();
+    message.setMessageType(MessageType.SERVER);
+    message.setName(oldName);
+    message.setText(" changed nickname to " + newName);
+    server.broadcastMessage(message);
+
   }
 }
