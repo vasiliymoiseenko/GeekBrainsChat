@@ -34,6 +34,7 @@ public class ChatController implements Initializable {
   @FXML GridPane regPane;
   @FXML TextField regLogin;
   @FXML PasswordField regPassword;
+  @FXML PasswordField regPasswordRep;
   @FXML TextField regName;
   @FXML Label regMessage;
 
@@ -88,6 +89,7 @@ public class ChatController implements Initializable {
   public void changeStageToReg() {
     regLogin.clear();
     regPassword.clear();
+    regPasswordRep.clear();
     regName.clear();
     regMessage.setVisible(false);
 
@@ -107,9 +109,18 @@ public class ChatController implements Initializable {
   }
 
   public void register() throws IOException {
-    if (regLogin.getText().isEmpty() || regPassword.getText().isEmpty() || regName.getText().isEmpty()) {
+    if (connection == null) {
+      connection = new ClientConnection(this);
+      new Thread(connection).start();
+    }
+    if (regLogin.getText().isEmpty() || regPassword.getText().isEmpty()
+        || regPasswordRep.getText().isEmpty() || regName.getText().isEmpty()) {
       regMessage.setTextFill(Color.RED);
       regMessage.setText("Enter login, password and name");
+      regMessage.setVisible(true);
+    } else if (!regPassword.getText().equals(regPasswordRep.getText())) {
+      regMessage.setTextFill(Color.RED);
+      regMessage.setText("Passwords do not match");
       regMessage.setVisible(true);
     } else {
       Message message = new Message();
