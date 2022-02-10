@@ -18,6 +18,7 @@ public class ClientHandler {
   private Server server;
   private Socket socket;
   private AuthService authService;
+  private HistoryLogService historyLogService;
   private ObjectInputStream in;
   private ObjectOutputStream out;
   private String name;
@@ -28,13 +29,14 @@ public class ClientHandler {
       this.server = server;
       this.socket = socket;
       this.authService = server.getAuthService();
+      this.historyLogService = server.getHistoryLogService();
       this.out = new ObjectOutputStream(socket.getOutputStream());
       this.in = new ObjectInputStream(socket.getInputStream());
       threadPool.execute(() -> {
         try {
           authentication();
           readMessage();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | SQLException e) {
           LOGGER.error(e);
           LOGGER.debug(e.toString(), e);
         } finally {
@@ -55,7 +57,7 @@ public class ClientHandler {
     return login;
   }
 
-  private void authentication() throws IOException, ClassNotFoundException {
+  private void authentication() throws IOException, ClassNotFoundException, SQLException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
       if (message.getMessageType() == MessageType.REG) {
@@ -119,16 +121,17 @@ public class ClientHandler {
     send(message);
   }
 
-  private void notifyAboutLogin() {
+  private void notifyAboutLogin() throws SQLException{
     Message message = new Message();
     message.setMessageType(MessageType.SERVER);
     message.setName(name);
     message.setText(" entered the chat");
+    historyLogService.insertMessage(message);
     server.broadcastMessage(message);
     LOGGER.info(name + " entered the chat");
   }
 
-  private void readMessage() throws IOException, ClassNotFoundException {
+  private void readMessage() throws IOException, ClassNotFoundException, SQLException {
     while (socket.isConnected()) {
       Message message = (Message) in.readObject();
       switch (message.getMessageType()) {
@@ -180,10 +183,11 @@ public class ClientHandler {
   }
 
 
-  private void broadcastMessage(Message message) {
+  private void broadcastMessage(Message message) throws SQLException{
     LOGGER.info(name + ": " + message.getText());
     message.setName(name);
     message.setLogin(login);
+    historyLogService.insertMessage(message);
     server.broadcastMessage(message);
   }
 
@@ -191,7 +195,6 @@ public class ClientHandler {
     try {
       out.writeObject(message);
       out.reset();
-      LOGGER.debug("SEND: " + message);
     } catch (IOException e) {
       LOGGER.error(e);
       LOGGER.debug(e.toString(), e);
@@ -202,28 +205,29 @@ public class ClientHandler {
     LOGGER.info(login + "closed connection");
     if (login != null) {
       server.removeClient(this);
-      notifyAboutExit();
     }
     try {
+      notifyAboutExit();
       in.close();
       out.close();
       socket.close();
-    } catch (IOException e) {
+    } catch (IOException | SQLException e) {
       LOGGER.error(e);
       LOGGER.debug(e.toString(), e);
     }
   }
 
-  private void notifyAboutExit() {
+  private void notifyAboutExit() throws SQLException{
     Message message = new Message();
     message.setMessageType(MessageType.SERVER);
     message.setName(name);
     message.setText(" left the chat");
+    historyLogService.insertMessage(message);
     server.broadcastMessage(message);
     LOGGER.info(name + " left the chat");
   }
 
-  private void sendNewName(String newName) {
+  private void sendNewName(String newName) throws SQLException{
     String oldName = name;
     name = newName;
 
@@ -236,6 +240,7 @@ public class ClientHandler {
     message.setMessageType(MessageType.SERVER);
     message.setName(oldName);
     message.setText(" changed nickname to " + newName);
+    historyLogService.insertMessage(message);
     server.broadcastMessage(message);
 
   }
