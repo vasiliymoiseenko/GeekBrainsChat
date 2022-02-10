@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 public class ClientHandler {
 
   private static final Logger LOGGER = LogManager.getLogger(ClientHandler.class);
+  private static final int HISTORY_SIZE = 10;
 
   private Server server;
   private Socket socket;
@@ -113,11 +114,12 @@ public class ClientHandler {
     LOGGER.warn(text);
   }
 
-  private void completeAuth() {
+  private void completeAuth() throws SQLException{
     Message message = new Message();
     message.setMessageType(MessageType.CONNECT);
     message.setName(name);
     message.setLogin(login);
+    message.setHistory(historyLogService.readLog(HISTORY_SIZE));
     send(message);
   }
 
@@ -242,6 +244,5 @@ public class ClientHandler {
     message.setText(" changed nickname to " + newName);
     historyLogService.insertMessage(message);
     server.broadcastMessage(message);
-
   }
 }

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,7 +32,6 @@ public class ClientConnection implements Runnable {
   private ObjectInputStream in;
   private ObjectOutputStream out;
   private ChatController controller;
-  //private String name;
   private String login;
 
   public ClientConnection(ChatController controller) {
@@ -105,10 +105,18 @@ public class ClientConnection implements Runnable {
   }
 
   private void connect(Message message) {
-    //name = message.getName();
     login = message.getLogin();
     LOGGER.info("Authorization completed");
-    Platform.runLater(() -> controller.changeStageToChat());
+    Platform.runLater(() -> {
+      ArrayList<Message> history = message.getHistory();
+      for (Message m: history) {
+        switch (m.getMessageType()) {
+          case USER -> addAsUser(m);
+          case SERVER -> addAsServer(m);
+        }
+      }
+      controller.changeStageToChat();
+    });
   }
 
   private void readMessage() throws IOException, ClassNotFoundException {
