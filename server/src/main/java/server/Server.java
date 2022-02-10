@@ -21,12 +21,14 @@ public class Server {
   private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
   private static AuthService authService = new AuthService();
+  private static HistoryLogService historyLogService = new HistoryLogService();
   private static HashMap<String, ClientHandler> clients = new HashMap<>();
   private static HashMap<String, UserCell> userList = new HashMap<>();
 
   public Server() {
     try (ServerSocket server = new ServerSocket(PORT)) {
       authService.start();
+      historyLogService.start();
       while (true) {
         Socket socket = server.accept();
         LOGGER.info("Client is connected");
@@ -46,6 +48,10 @@ public class Server {
 
   public AuthService getAuthService() {
     return authService;
+  }
+
+  public HistoryLogService getHistoryLogService() {
+    return historyLogService;
   }
 
   public synchronized boolean isOnline(String login) {
@@ -86,6 +92,7 @@ public class Server {
   }
 
   public void broadcastMessage(Message message) {
+    LOGGER.debug("SEND: " + message);
     for (Map.Entry<String, ClientHandler> entry: clients.entrySet()) {
       entry.getValue().send(message);
     }

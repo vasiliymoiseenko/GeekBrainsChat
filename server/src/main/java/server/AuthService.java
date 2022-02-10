@@ -75,8 +75,7 @@ public class AuthService {
   }
 
   public void insertUser(String login, String password, String name) throws SQLException{
-    try (PreparedStatement ps = connection.prepareStatement(
-        "INSERT INTO users (login, password, name) VALUES (?, ?, ?)")) {
+    try (PreparedStatement ps = connection.prepareStatement("INSERT INTO users (login, password, name) VALUES (?, ?, ?)")) {
       ps.setString(1, login);
       ps.setString(2, password);
       ps.setString(3, name);
@@ -140,7 +139,6 @@ public class AuthService {
          password TEXT NOT NULL,\s
          name TEXT NOT NULL UNIQUE\s
         );""");
-
   }
 
   private void connect() throws SQLException {

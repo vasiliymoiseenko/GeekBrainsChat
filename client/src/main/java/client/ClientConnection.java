@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,7 +32,7 @@ public class ClientConnection implements Runnable {
   private ObjectInputStream in;
   private ObjectOutputStream out;
   private ChatController controller;
-  private String name;
+  private String login;
 
   public ClientConnection(ChatController controller) {
     try {
@@ -104,9 +105,18 @@ public class ClientConnection implements Runnable {
   }
 
   private void connect(Message message) {
-    name = message.getName();
+    login = message.getLogin();
     LOGGER.info("Authorization completed");
-    Platform.runLater(() -> controller.changeStageToChat());
+    Platform.runLater(() -> {
+      ArrayList<Message> history = message.getHistory();
+      for (Message m: history) {
+        switch (m.getMessageType()) {
+          case USER -> addAsUser(m);
+          case SERVER -> addAsServer(m);
+        }
+      }
+      controller.changeStageToChat();
+    });
   }
 
   private void readMessage() throws IOException, ClassNotFoundException {
@@ -122,9 +132,9 @@ public class ClientConnection implements Runnable {
   }
 
   private void updateSettings(Message message) {
-    if (message.getName() != null) {
+    /*if (message.getName() != null) {
       name = message.getName();
-    }
+    }*/
     if (message.getText() == null) {
       Platform.runLater(() -> {
         controller.setMessage.setTextFill(Color.ROYALBLUE);
@@ -161,16 +171,14 @@ public class ClientConnection implements Runnable {
     LOGGER.info(message.getName() + ": " + message.getText());
     HBox chatMessage = new HBox();
     chatMessage.setSpacing(10);
-    if (message.getName().equals(name)) {
+    if (message.getLogin().equals(login)) {
       chatMessage.setAlignment(Pos.TOP_RIGHT);
-      chatMessage.getChildren()
-          .add(new Bubble(message.getText(), FORMATTER.format(message.getDate())));
+      chatMessage.getChildren().add(new Bubble(message.getText(), FORMATTER.format(message.getDate())));
       chatMessage.getChildren().add(new UserPicture());
     } else {
       chatMessage.setAlignment(Pos.TOP_LEFT);
       chatMessage.getChildren().add(new UserPicture());
-      chatMessage.getChildren().add(
-          new Bubble(message.getName(), message.getText(), FORMATTER.format(message.getDate())));
+      chatMessage.getChildren().add(new Bubble(message.getName(), message.getText(), FORMATTER.format(message.getDate())));
     }
     Platform.runLater(() -> controller.chat.addRow(controller.chat.getRowCount(), chatMessage));
   }

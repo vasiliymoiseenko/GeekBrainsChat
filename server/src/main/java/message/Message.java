@@ -9,7 +9,21 @@ import java.util.List;
 public class Message implements Serializable {
 
   public enum MessageType {
-    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST, SET
+    REG, AUTH, CONNECT, DISCONNECT, USER, SERVER, LIST, SET;
+
+    public static MessageType fromInt(int i) {
+      switch (i) {
+        case 0: return REG;
+        case 1: return AUTH;
+        case 2: return CONNECT;
+        case 3: return DISCONNECT;
+        case 4: return USER;
+        case 5: return SERVER;
+        case 6: return LIST;
+        case 7: return SET;
+        default: return null;
+      }
+    }
   }
 
   private Date date;
@@ -19,6 +33,7 @@ public class Message implements Serializable {
   private String name;
   private String text;
   private List<UserCell> userList;
+  private ArrayList<Message> history;
 
   public Message () {
     this.date = new Date();
@@ -74,6 +89,14 @@ public class Message implements Serializable {
 
   public void setUserList(HashMap<String, UserCell> userList) {
     this.userList = new ArrayList<>(userList.values());
+  }
+
+  public ArrayList<Message> getHistory() {
+    return history;
+  }
+
+  public void setHistory(ArrayList<Message> history) {
+    this.history = history;
   }
 
   @Override
