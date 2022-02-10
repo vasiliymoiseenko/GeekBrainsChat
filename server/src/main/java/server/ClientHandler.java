@@ -115,6 +115,7 @@ public class ClientHandler {
     Message message = new Message();
     message.setMessageType(MessageType.CONNECT);
     message.setName(name);
+    message.setLogin(login);
     send(message);
   }
 
@@ -134,12 +135,12 @@ public class ClientHandler {
         case USER -> broadcastMessage(message);
         case LIST -> server.changeStatus(login, message.getText());
         case DISCONNECT -> closeConnection();
-        case SET -> updtateSettings(message);
+        case SET -> updateSettings(message);
       }
     }
   }
 
-  private void updtateSettings(Message setMessage) {
+  private void updateSettings(Message setMessage) {
     try {
       if (setMessage.getName() != null) {
         if (setMessage.getPassword() != null) {
@@ -182,6 +183,7 @@ public class ClientHandler {
   private void broadcastMessage(Message message) {
     LOGGER.info(name + ": " + message.getText());
     message.setName(name);
+    message.setLogin(login);
     server.broadcastMessage(message);
   }
 
